@@ -1,8 +1,7 @@
-import React, {useEffect, useRef} from 'react';
-import Lottie from 'lottie-web';
+import React, { useEffect, useRef } from 'react';
 
 interface LottieAnimationProps {
-  animationData: any; // Or a more specific type if you have one
+  animationData: any;
   loop?: boolean;
   autoplay?: boolean;
 }
@@ -16,14 +15,17 @@ const LottieAnimation: React.FC<LottieAnimationProps> = ({
   let anim: any = null;
 
   useEffect(() => {
-    if (containerRef.current) {
-      anim = Lottie.loadAnimation({
-        container: containerRef.current,
-        animationData: animationData,
-        loop: loop,
-        autoplay: autoplay,
-      });
-    }
+    // Dynamically import lottie-web only on the client-side
+    import('lottie-web').then((Lottie) => {
+      if (containerRef.current) {
+        anim = Lottie.default.loadAnimation({ // Access default export
+          container: containerRef.current,
+          animationData: animationData,
+          loop: loop,
+          autoplay: autoplay,
+        });
+      }
+    });
 
     return () => {
       if (anim) {
@@ -32,7 +34,7 @@ const LottieAnimation: React.FC<LottieAnimationProps> = ({
     };
   }, [animationData, loop, autoplay]);
 
-  return <div ref={containerRef}/>;
+  return <div ref={containerRef} />;
 };
 
 export default LottieAnimation;
